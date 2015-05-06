@@ -54,7 +54,7 @@ namespace Webshop.DBM
                 list.Add(row);
             }
 
-            
+
             if (list.Count == 1)
             {
                 return (T)list[0];
@@ -174,7 +174,10 @@ namespace Webshop.DBM
             }
         }
 
-
+        ~DBManager()
+        {
+            Connection.Close();
+        }
 
     }
 }
