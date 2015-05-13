@@ -12,6 +12,7 @@ namespace Webshop.Models
         public int Series { get; set; } // Foreign Key --> Serie(Id)
         public int Category { get; set; } // Foreign Key --> Category(Id)
 
+        public string Name { get; set; }
         public string Energyclass { get; set; }
         public string Description { get; set; }
         public string Manufactor { get; set; }

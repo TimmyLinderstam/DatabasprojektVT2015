@@ -1,5 +1,5 @@
 ﻿@{
-    ViewBag.Title = "Home Page";
+    ViewBag.Title = "Hem";
 }
 @section featured {
     <section class="featured">
@@ -12,4 +12,9 @@
         </div>
     </section>
 }
-<h3>We suggest the following:</h3>
+<h3>Vad vill du göra?</h3>
+<ul>
+    <li>@Html.ActionLink("Se produkter", "Index","Product")</li>
+    <li><a href="#">Annat Skit</a></li>
+    <li><a href="#">Annat ..</a></li>
+</ul>
