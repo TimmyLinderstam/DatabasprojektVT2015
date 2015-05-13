@@ -6,20 +6,22 @@ using System.Linq;
 using System.Web;
 using System.Web.Mvc;
 using Webshop.DBM;
+using Webshop.Models;
 
 namespace Webshop.Controllers
 {
     public class HomeController : Controller
     {
-        private bool connection_open;
-        private MySqlConnection connection;
+  
 
         public ActionResult Index()
         {
             ViewBag.Message = "Modify this template to jump-start your ASP.NET MVC application.";
 
-            DBManager.Instance.Test();
-
+           // DBManager.Instance.Test();
+            var cmd = DBManager.Instance.CreateCmd();
+            cmd.CommandText = "select * from Products";
+            var f = DBManager.Instance.ReadQuery<Product>(cmd);
             //MySqlCommand 
             return View();
         }

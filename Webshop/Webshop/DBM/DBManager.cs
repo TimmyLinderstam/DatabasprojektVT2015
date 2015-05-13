@@ -5,8 +5,10 @@ using System.Collections.Generic;
 using System.Configuration;
 using System.Dynamic;
 using System.Linq;
+using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
+using Webshop.App_Start;
 
 namespace Webshop.DBM
 {
@@ -22,6 +24,15 @@ namespace Webshop.DBM
         public DBManager()
         {
             GetConnection();
+            CreateTablesIfNotExists();
+        }
+
+        private void CreateTablesIfNotExists()
+        {
+            var cmd = CreateCmd();
+            String tables = "CREATE TABLE IF NOT EXISTS Products(Id int, Namn varchar(30));";
+            cmd.CommandText = tables;
+            cmd.ExecuteNonQuery();
         }
 
         public void ExecuteQuery(MySqlCommand cmd)
@@ -42,22 +53,27 @@ namespace Webshop.DBM
         {
             MySqlDataReader reader = cmd.ExecuteReader();
 
-            List<Object> list = new List<object>();
+            var list = new List<Dictionary<string, object>>();
             while (reader.Read())
             {
-                dynamic row = new ExpandoObject();
+                var row = new Dictionary<string, object>();
+                //dynamic row = new ExpandoObject();
                 for (int i = 0; i < reader.FieldCount; i++)
                 {
-                    row[reader.GetName(i)] = reader.GetValue(i);
+                  //  ((IDictionary<string, object>)row)[reader.GetName(i)] = reader.GetValue(i);
+                    row.Add(reader.GetName(i), reader.GetValue(i));
                 }
 
                 list.Add(row);
             }
 
+            reader.Close();
 
             if (list.Count == 1)
             {
-                return (T)list[0];
+                //return (T)Convert.ChangeType(list[0], typeof(T));
+                return list[0].GetObject<T>();
+               //(T)list[0];
             }
             // else todo
 
@@ -136,7 +152,7 @@ namespace Webshop.DBM
 
         }
 
-        private MySqlCommand Create()
+        public MySqlCommand CreateCmd()
         {
             MySqlCommand cmd = new MySqlCommand();
             cmd.Connection = Connection;
@@ -174,8 +190,11 @@ namespace Webshop.DBM
             }
         }
 
+      
+
         ~DBManager()
         {
+            Console.WriteLine("Closed SQL Connection");
             Connection.Close();
         }
 
