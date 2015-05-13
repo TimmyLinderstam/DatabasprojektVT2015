@@ -1,0 +1,60 @@
+CREATE TABLE IF NOT EXISTS Product(
+Id int PRIMARY KEY AUTO INCREMENT,
+Units int,
+Energyclass varchar(20),
+Model varchar(40),
+AcquisitionPrice int,
+Description text,
+Price int,
+Manufactor varchar(100),
+Category INT NOT NULL,
+Series INT,
+);
+
+CREATE TABLE IF NOT EXISTS Customer(
+Id int PRIMARY KEY AUTO INCREMENT,
+PersonId varchar(20),
+EmailAdress varchar(50),
+HomeAdress varchar(200),
+TelephoneNumber varchar(20)
+);
+
+CREATE TABLE IF NOT EXISTS Purchase(
+Id int PRIMARY KEY AUTO INCREMENT,
+Customer INT,
+Product INT,
+FOREIGN KEY(Customer) REFERENCES Customer(Id),
+FOREIGN KEY(Product) REFERENCES Product(Id),
+);
+
+CREATE TABLE IF NOT EXISTS Category(
+Id int PRIMARY KEY AUTO INCREMENT,
+CategoryName varchar(50)
+);
+
+CREATE TABLE IF NOT EXISTS Serie(
+Id int PRIMARY KEY AUTO INCREMENT,
+SerieName varchar(50),
+);
+
+CREATE TABLE IF NOT EXISTS Promotion(
+Id int PRIMARY KEY AUTO INCREMENT,
+Description text,
+Value int(20),
+Category INT,
+);
+
+
+ALTER TABLE Product (
+ADD CONSTRAINT FOREIGN KEY(Category) REFERENCES Category(Id),
+ADD CONSTRAINT FOREIGN KEY(Series) REFERENCES Serie(Id),
+);
+
+ALTER TABLE Promotion(
+ADD CONSTAINT FOREIGN KEY(Category) REFERENCES Category(Id),
+);
+
+ALTER TABLE Purchase(
+ADD CONSTRAINT FOREIGN KEY(Customer) REFERENCES Customer(Id),
+ADD CONSTRAINT FOREIGN KEY(Product) REFERENCES Product(Id),
+);
