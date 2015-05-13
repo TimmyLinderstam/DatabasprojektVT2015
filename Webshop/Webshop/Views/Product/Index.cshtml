@@ -1,7 +1,13 @@
-﻿@{
+﻿@model  Webshop.Models.Product
+
+@{
     ViewBag.Title = "Index";
 }
 
 <h2>Index</h2>
 
 Lista alla produkter
+
+<a>@Model.Price</a>
+
+Energiklas: @Model.Energyclass

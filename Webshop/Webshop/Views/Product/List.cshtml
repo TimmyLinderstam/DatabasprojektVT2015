@@ -1,0 +1,19 @@
+﻿@using Webshop.Models;
+@model  IEnumerable<Product>
+
+@{
+    ViewBag.Title = "Listar alla produkter";
+}
+
+<h2>Hej</h2>
+
+<div>
+    @foreach (Product p in Model)
+    {
+        <div class="product">
+            <p>@p.Name</p>
+
+
+        </div>
+    }
+</div>

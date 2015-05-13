@@ -11,7 +11,12 @@ namespace Webshop.Controllers
         //
         // GET: /Product/
 
-        public ActionResult Index()
+        public ActionResult Index(int id)
+        {
+            return View();
+        }
+
+        public ActionResult List()
         {
             return View();
         }
