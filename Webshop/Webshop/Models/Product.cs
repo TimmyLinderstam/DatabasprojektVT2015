@@ -1,21 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-<<<<<<< HEAD
-using System.Text;
-using System.Threading.Tasks;
-
-namespace Webshop.Models
-{
-    class Product
-    {
-        public int Id { get; set; }
-
-        public String Namn { get; set; }
-    }
-}
-=======
-using System.Web;
+﻿using System.Web;
 
 namespace Webshop.Models
 {
@@ -36,4 +19,3 @@ namespace Webshop.Models
 
     }
 }
->>>>>>> origin/master
