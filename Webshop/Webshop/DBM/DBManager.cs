@@ -4,10 +4,14 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Configuration;
 using System.Dynamic;
+using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
+using System.Web;
+using System.Web.Hosting;
+using System.Web.Mvc;
 using Webshop.App_Start;
 
 namespace Webshop.DBM
@@ -29,10 +33,14 @@ namespace Webshop.DBM
 
         private void CreateTablesIfNotExists()
         {
-            var cmd = CreateCmd();
-            String tables = "CREATE TABLE IF NOT EXISTS Products(Id int, Namn varchar(30));";
-            cmd.CommandText = tables;
-            cmd.ExecuteNonQuery();
+
+            if (File.Exists(HostingEnvironment.MapPath(@"~/Content/tables.sql")))
+            {
+                var cmd = CreateCmd();
+                String tables = File.ReadAllText(HostingEnvironment.MapPath(@"~/Content/tables.sql"));
+                cmd.CommandText = tables;
+                cmd.ExecuteNonQuery();
+            }
         }
 
         public void ExecuteQuery(MySqlCommand cmd)
@@ -57,10 +65,8 @@ namespace Webshop.DBM
             while (reader.Read())
             {
                 var row = new Dictionary<string, object>();
-                //dynamic row = new ExpandoObject();
                 for (int i = 0; i < reader.FieldCount; i++)
                 {
-                  //  ((IDictionary<string, object>)row)[reader.GetName(i)] = reader.GetValue(i);
                     row.Add(reader.GetName(i), reader.GetValue(i));
                 }
 
@@ -71,88 +77,13 @@ namespace Webshop.DBM
 
             if (list.Count == 1)
             {
-                //return (T)Convert.ChangeType(list[0], typeof(T));
                 return list[0].GetObject<T>();
-               //(T)list[0];
             }
-            // else todo
 
             return default(T);
         }
 
-
-        public void Test()
-        {
-            try
-            {
-                /* MySqlCommand cmd = new MySqlCommand();
-                 cmd.Connection = Connection;
-                 cmd.CommandText = "INSERT INTO Authors(Name) VALUES(@Name)";
-                 cmd.Prepare();
-
-                 cmd.Parameters.AddWithValue("@Name", "Trygve Gulbranssen");
-                 cmd.ExecuteNonQuery();
-                 */
-
-                MySqlCommand cmd = new MySqlCommand();
-                cmd.Connection = Connection;
-                cmd.CommandText =
-            string.Format("select * from Anstalld where AnstID = '{0}'", 1);
-
-                //cmd.
-
-                MySqlDataReader reader = cmd.ExecuteReader();
-
-
-
-                try
-                {
-                    List<Object> b = new List<object>();
-                    while (reader.Read())
-                    {
-                        dynamic row = new ExpandoObject();
-                        for (int i = 0; i < reader.FieldCount; i++)
-                        {
-                            row[reader.GetName(i)] = reader.GetValue(i);
-                        }
-
-                        b.Add(row);
-
-                        // Console.WriteLine(reader.GetString(0).PadRight(18) +
-                        //  reader.GetString(1));
-                    }
-
-                    reader.Read();
-                    String Name;
-                    if (reader.IsDBNull(1) == false)
-                        Name = reader.GetString(1);
-                    else
-                        Name = null;
-
-
-                    reader.Close();
-
-                }
-                catch (MySqlException e)
-                {
-                    string MessageString = "Read error occurred  / entry not found loading the Column details: "
-                        + e.ErrorCode + " - " + e.Message + "; \n\nPlease Continue";
-
-                }
-            }
-            catch (MySqlException e)
-            {
-                string MessageString = "The following error occurred loading the Column details: "
-                    + e.ErrorCode + " - " + e.Message;
-
-            }
-
-
-            // Connection.Close();
-
-        }
-
-        public MySqlCommand CreateCmd()
+        protected MySqlCommand CreateCmd()
         {
             MySqlCommand cmd = new MySqlCommand();
             cmd.Connection = Connection;
