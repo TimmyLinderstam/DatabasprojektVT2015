@@ -18,9 +18,6 @@ namespace Webshop.DBM
 {
     public class DBManager
     {
-        private static DBManager _instance;
-        public static DBManager Instance { get { if (_instance == null) _instance = new DBManager(); return _instance; } private set { _instance = value; } }
-
         private bool ConnectionOpen { get; set; }
 
         private MySqlConnection Connection { get; set; }
@@ -95,7 +92,7 @@ namespace Webshop.DBM
             ConnectionOpen = false;
 
             Connection = new MySqlConnection();
-            Connection.ConnectionString = ConfigurationManager.ConnectionStrings["DefaultConnection"].ConnectionString;
+            Connection.ConnectionString = ConfigurationManager.ConnectionStrings["ShopConnection"].ConnectionString;
 
             if (OpenLocalConnection())
             {
