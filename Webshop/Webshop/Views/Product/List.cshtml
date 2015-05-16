@@ -10,10 +10,18 @@
 <div>
     @foreach (Product p in Model)
     {
-        <div class="product">
-            <p>@p.Name</p>
+        <a>
+            <div class="product">
+                <p>@p.Name</p>
+                <p>Kategori: @p.Category</p>
+                <p>Märke: @p.Brand</p>
+                <p>Tillverkare: @p.Manufactor</p>
+                <p>@p.Description</p>
 
-
-        </div>
+                <p>@p.Price SEK ink. Moms</p>
+                <p>@p.Units Varusaldo i nätlagret</p>
+            </div>
+        </a>
+       
     }
 </div>
