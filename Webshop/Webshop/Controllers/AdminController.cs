@@ -20,16 +20,24 @@ namespace Webshop.Controllers
             return View();
         }
 
-        public ActionResult AddProduct()
+        public ActionResult EditProduct()
         {
 
             return View();
         }
 
         [HttpPost]
-        public ActionResult AddProduct(Product p)
+        public ActionResult SaveProduct(Product p)
         {
             DBController.Instance.AddProduct(p);
+
+            return RedirectToAction("Index");
+        }
+
+        [HttpPost]
+        public ActionResult RemoveProduct(int id)
+        {
+            DBController.Instance.RemoveProduct(id);
 
             return RedirectToAction("Index");
         }

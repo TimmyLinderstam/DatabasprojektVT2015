@@ -16,7 +16,7 @@ namespace Webshop.DBM
         {
             var cmd = CreateCmd();
 
-            cmd.CommandText = "INSERT INTO Product(Name, Units, Price,AcquisitionPrice, Series, Category, Energyclass, Description, Manufactor, Brand, Model)" +
+            cmd.CommandText = "INSERT INTO Product" +
                 "VALUES(NULL, @Name, @Units, @Energyclass, @Model, @AcquisitionPrice, @Description, @Price, @Manufactor)";
 
             cmd.Prepare();
@@ -30,6 +30,8 @@ namespace Webshop.DBM
             cmd.Parameters.AddWithValue("@Description", p.Description);
             cmd.Parameters.AddWithValue("@Price", p.Price);
             cmd.Parameters.AddWithValue("@Manufactor", p.Manufactor);
+
+            cmd.Parameters.AddWithValue("@Category", p.Category);
 
             cmd.ExecuteNonQuery();
         }

@@ -1,0 +1,16 @@
+﻿@using Webshop.Models;
+@model Product
+
+@{
+    ViewBag.Title = "AddProduct";
+}
+
+<h2>AddProduct</h2>
+
+@using (Html.BeginForm("SaveProduct", "Admin"))
+{
+    <p>Namn:</p> @Html.EditorFor(x => x.Name)
+
+    <br />
+    <input type="submit" value="Spara"/>
+}
