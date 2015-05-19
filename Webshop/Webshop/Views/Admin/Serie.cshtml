@@ -1,0 +1,33 @@
+﻿@using Webshop.Models;
+@model  IEnumerable<Serie>
+
+@{
+    ViewBag.Title = "Serier";
+}
+
+<div>
+    @using (Html.BeginForm("SaveSerie", "Admin"))
+    {
+        <p>Namn:</p>        <input name="SerieName" type="text" />
+
+        <input type="submit" value="Lägg till" />
+    }
+</div>
+
+<br />
+
+<h2>Serier</h2>
+
+@foreach (var item in Model)
+{
+    <div class="product">
+        @using (Html.BeginForm("SaveSerie", "Admin"))
+        {
+        <input name="Id" type="hidden" value="@item.Id" />
+        <p>Namn:</p>    <input name="SerieName" type="text" value="@item.SerieName" />
+
+        <input type="submit" value="Spara" />
+        }
+        @Html.ActionLink("Ta bort", "RemoveSerie", "Admin", new { id = item.Id }, null)
+    </div>
+}

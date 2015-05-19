@@ -14,3 +14,19 @@ Energiklas: @Model.Energyclass
 <p>Tillverkare: @Model.Manufactor</p>
 <p>@Model.Description</p>
 <p>@Model.Units st i nätlagret</p>
+
+<div>
+    <h3>Tillbehör:</h3>
+    @foreach (Product p in ViewBag.related)
+    {
+        <div class="product">
+            <h4>@p.Name</h4>
+
+            <p>@p.Price SEK ink. Moms</p>
+
+            <a href="@Url.Action("Item", "Product", new { id = p.Id})">
+                Läs mer...
+            </a>
+        </div>
+    }
+</div>

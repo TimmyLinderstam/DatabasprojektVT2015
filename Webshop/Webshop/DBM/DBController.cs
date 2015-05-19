@@ -78,6 +78,15 @@ namespace Webshop.DBM
             return ReadList<Product>(cmd);
         }
 
+        public List<Product> GetProductSuggestions(Product product)
+        {
+            var cmd = CreateCmd();
+            cmd.CommandText = String.Format("SELECT products.* FROM Product as products inner join Serie on Serie.Id=products.Series WHERE Serie.Id={0} AND products.Id !={1} LIMIT 5", product.Series, product.Id);
+            return ReadList<Product>(cmd);
+        }
+
+        // CAT
+
         public List<Category> GetCategories()
         {
             var cmd = CreateCmd();
@@ -113,6 +122,46 @@ namespace Webshop.DBM
         {
             var cmd = CreateCmd();
             cmd.CommandText = String.Format("DELETE from Category WHERE Id={0}", id);
+            cmd.ExecuteNonQuery();
+        }
+
+        // SERIE
+
+        public List<Serie> GetSeries()
+        {
+            var cmd = CreateCmd();
+            cmd.CommandText = "SELECT * FROM Serie";
+            return ReadList<Serie>(cmd);
+        }
+
+        public void SaveSerie(Serie serie)
+        {
+            var cmd = CreateCmd();
+
+            if (serie.Id == 0)
+            {
+                cmd.CommandText = "INSERT INTO Serie " +
+                    "VALUES(NULL, @SerieName)";
+
+            }
+            else
+            {
+                cmd.CommandText = String.Format("UPDATE Serie " +
+                   "SET SerieName=@SerieName WHERE Id={0}", serie.Id);
+            }
+
+            cmd.Prepare();
+
+            // Add values
+            cmd.Parameters.AddWithValue("@SerieName", serie.SerieName);
+
+            cmd.ExecuteNonQuery();
+        }
+
+        public void RemoveSerie(int id)
+        {
+            var cmd = CreateCmd();
+            cmd.CommandText = String.Format("DELETE from Serie WHERE Id={0}", id);
             cmd.ExecuteNonQuery();
         }
     }

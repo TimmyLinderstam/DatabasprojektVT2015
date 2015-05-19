@@ -92,29 +92,38 @@ namespace Webshop.DBM
 
         public List<T> ReadList<T>(MySqlCommand cmd)
         {
-            MySqlDataReader reader = cmd.ExecuteReader();
-
-            var list = new List<Dictionary<string, object>>();
-            while (reader.Read())
+             MySqlDataReader reader = null;
+            try
             {
-                var row = new Dictionary<string, object>();
-                for (int i = 0; i < reader.FieldCount; i++)
+                reader = cmd.ExecuteReader();
+
+                var list = new List<Dictionary<string, object>>();
+                while (reader.Read())
                 {
-                    row.Add(reader.GetName(i),  reader.IsDBNull(i) ? null : reader.GetValue(i));
+                    var row = new Dictionary<string, object>();
+                    for (int i = 0; i < reader.FieldCount; i++)
+                    {
+                        row.Add(reader.GetName(i), reader.IsDBNull(i) ? null : reader.GetValue(i));
+                    }
+
+                    list.Add(row);
                 }
 
-                list.Add(row);
+
+
+                List<T> results = new List<T>();
+                foreach (var item in list)
+                {
+                    results.Add(item.GetObject<T>());
+                }
+
+                return results;
             }
-
-            reader.Close();
-
-            List<T> results = new List<T>();
-            foreach (var item in list)
+            finally
             {
-                results.Add(item.GetObject<T>());
+                if (reader != null)
+                    reader.Close();
             }
-
-            return results;
 
         }
 
@@ -156,7 +165,7 @@ namespace Webshop.DBM
             }
         }
 
-      
+
 
         ~DBManager()
         {

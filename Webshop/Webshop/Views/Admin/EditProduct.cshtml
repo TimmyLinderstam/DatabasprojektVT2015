@@ -9,8 +9,8 @@
 
 @using (Html.BeginForm("SaveProduct", "Admin"))
 {
-     @Html.HiddenFor(x => x.Id)
-    
+    @Html.HiddenFor(x => x.Id)
+
     <p>Namn:</p> @Html.EditorFor(x => x.Name)
 
     <p>Inköpspris:</p> @Html.EditorFor(x => x.AcquisitionPrice)
@@ -39,10 +39,31 @@
         ((List<Category>)ViewBag.categories).Select(x => new { Value = x.Id, Text = x.CategoryName }),
         "Value",
         "Text", Model == null ? 0 : Model.Category
+        )
     )
-)
 
+    <p>Serie:</p>
+  @Html.DropDownListFor(x => x.Series, (IEnumerable<SelectListItem>)ViewBag.series)
+    //((List<Serie>)ViewBag.series).Add(new Serie() { Id =0, SerieName = "()"});
+  
+    @*Html.DropDownListFor(
+    x => x.Series,
+    new SelectList(
+            ((List<Serie>)ViewBag.series).OrderBy(s => s.SerieName),
+        "Id",
+            "SerieName",
+        Model.Series))//, "-- Select State --")
+    *@
+    @*Html.DropDownListFor(x=>x.Series
+        ,
+    new SelectList(
+                ((List<Serie>)ViewBag.series).Select(x => new { Value = x.Id, Text = x.SerieName }),
+        "Value",
+            "Text", Model == null ? 0 : Model.Series
+        )
+    )
+    *@
 
     <br />    <br />
-    <input type="submit" value="Spara"/>
+    <input type="submit" value="Spara" />
 }

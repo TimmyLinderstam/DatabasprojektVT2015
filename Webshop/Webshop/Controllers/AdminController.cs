@@ -22,8 +22,36 @@ namespace Webshop.Controllers
 
         public ActionResult EditProduct(int id = -1)
         {
+            var product = DBController.Instance.GetProduct(id);
+
             ViewBag.categories = DBController.Instance.GetCategories();
-            return View(DBController.Instance.GetProduct(id));
+
+            // Series
+            var ls = new List<Serie>();
+            ls.Add(new Serie() { Id = -1, SerieName = "(Ingen)" });
+            ls.AddRange(DBController.Instance.GetSeries());
+
+          //  var series = new SelectList(ls, "Id", "SerieName", product.Series);
+            //series.Where(x => x.Value == product.Series.ToString()).All(x => x.Selected = true);
+
+
+            var serieList = new List<SelectListItem>();
+
+            foreach (Serie p in ls)
+            {
+                serieList.Add(new SelectListItem
+                {
+                    Value = p.Id.ToString(),
+                    Text = p.SerieName.ToString(),
+                    // To set the selected item use the following code 
+                    // Note: you should not set every item to selected
+                    Selected = product == null ? false : product.Series == p.Id
+                });
+            }
+
+            ViewBag.series = serieList;
+           
+            return View(product);
         }
 
         [HttpPost]
@@ -61,6 +89,29 @@ namespace Webshop.Controllers
             DBController.Instance.SaveCategory(category);
 
             return RedirectToAction("Category", "Admin");
+        }
+
+
+        // Serie
+        public ActionResult Serie()
+        {
+            return View(DBController.Instance.GetSeries());
+        }
+
+        // Category
+        public ActionResult RemoveSerie(int id)
+        {
+            DBController.Instance.RemoveSerie(id);
+
+            return RedirectToAction("Serie", "Admin");
+        }
+
+        [HttpPost]
+        public ActionResult SaveSerie(Serie serie)
+        {
+            DBController.Instance.SaveSerie(serie);
+
+            return RedirectToAction("Serie", "Admin");
         }
 
     }
