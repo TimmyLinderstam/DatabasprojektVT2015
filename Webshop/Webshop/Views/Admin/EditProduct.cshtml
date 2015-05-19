@@ -9,8 +9,40 @@
 
 @using (Html.BeginForm("SaveProduct", "Admin"))
 {
+     @Html.HiddenFor(x => x.Id)
+    
     <p>Namn:</p> @Html.EditorFor(x => x.Name)
 
-    <br />
+    <p>Inköpspris:</p> @Html.EditorFor(x => x.AcquisitionPrice)
+
+    <p>Pris:</p> @Html.EditorFor(x => x.Price)
+
+    <p>Beskrivning:</p> @Html.TextAreaFor(x => x.Description)
+
+
+    <p>Energiklass:</p> @Html.EditorFor(x => x.Energyclass)
+
+    <p>Tillverkare:</p> @Html.EditorFor(x => x.Manufactor)
+
+    <p>Modell:</p> @Html.EditorFor(x => x.Model)
+
+    //<p>Namn:</p> @Html.EditorFor(x => x.Series)
+    //<p>Namn:</p> @Html.EditorFor(x => x.Category)
+
+    <p>Antal Enheter:</p> @Html.EditorFor(x => x.Units)
+
+
+    <p>Kategori:</p>
+    @Html.DropDownList(
+    "Category",
+    new SelectList(
+        ((List<Category>)ViewBag.categories).Select(x => new { Value = x.Id, Text = x.CategoryName }),
+        "Value",
+        "Text", Model == null ? 0 : Model.Category
+    )
+)
+
+
+    <br />    <br />
     <input type="submit" value="Spara"/>
 }

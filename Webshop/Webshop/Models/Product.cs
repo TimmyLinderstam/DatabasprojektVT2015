@@ -15,6 +15,9 @@ namespace Webshop.Models
         public string Manufactor { get; set; }
       
         public int Series { get; set; } // Foreign Key --> Serie(Id)
+        public Serie SeriesObj { get; set; }
+
         public int Category { get; set; } // Foreign Key --> Category(Id)
+        public Category CategoryObj { get; set; }
     }
 }

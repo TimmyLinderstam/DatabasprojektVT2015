@@ -54,8 +54,11 @@ namespace Webshop.DBM
             }
         }
 
-        public T ReadQuery<T>(MySqlCommand cmd)
+        public T Read<T>(string sql)
         {
+            var cmd = CreateCmd();
+            cmd.CommandText = sql;
+
             MySqlDataReader reader = cmd.ExecuteReader();
 
             var list = new List<Dictionary<string, object>>();
@@ -64,7 +67,7 @@ namespace Webshop.DBM
                 var row = new Dictionary<string, object>();
                 for (int i = 0; i < reader.FieldCount; i++)
                 {
-                    row.Add(reader.GetName(i), reader.GetValue(i));
+                    row.Add(reader.GetName(i), reader.IsDBNull(i) ? null : reader.GetValue(i));
                 }
 
                 list.Add(row);
@@ -77,7 +80,42 @@ namespace Webshop.DBM
                 return list[0].GetObject<T>();
             }
 
-            return default(T);
+            var def = default(T);
+            if (def is ValueType && Nullable.GetUnderlyingType(typeof(T)) == null)
+            {
+                throw new InvalidOperationException(
+                    string.Format("Cannot instantiate with non-nullable type: {0}",
+                        typeof(T)));
+            }
+            return def;
+        }
+
+        public List<T> ReadList<T>(MySqlCommand cmd)
+        {
+            MySqlDataReader reader = cmd.ExecuteReader();
+
+            var list = new List<Dictionary<string, object>>();
+            while (reader.Read())
+            {
+                var row = new Dictionary<string, object>();
+                for (int i = 0; i < reader.FieldCount; i++)
+                {
+                    row.Add(reader.GetName(i),  reader.IsDBNull(i) ? null : reader.GetValue(i));
+                }
+
+                list.Add(row);
+            }
+
+            reader.Close();
+
+            List<T> results = new List<T>();
+            foreach (var item in list)
+            {
+                results.Add(item.GetObject<T>());
+            }
+
+            return results;
+
         }
 
         protected MySqlCommand CreateCmd()

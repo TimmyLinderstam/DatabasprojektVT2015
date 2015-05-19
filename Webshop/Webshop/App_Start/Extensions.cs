@@ -18,7 +18,7 @@ namespace Webshop.App_Start
 
                 foreach (var kv in dict)
                 {
-                    type.GetProperty(kv.Key).SetValue(obj, kv.Value);
+                    type.GetProperty(kv.Key).SetValue(obj, kv.Value ?? GetDefaultValue(type.GetProperty(kv.Key).PropertyType));
                 }
                 return (T)obj;
             }
@@ -27,6 +27,14 @@ namespace Webshop.App_Start
                 throw new Exception("Table variables and class variables does not match");
             }
            // return default(T);
+        }
+
+        private static object GetDefaultValue(Type t)
+        {
+            if (t.IsValueType)
+                return Activator.CreateInstance(t);
+
+            return null;
         }
 
         public static T Cast<T>(this Object myobj)

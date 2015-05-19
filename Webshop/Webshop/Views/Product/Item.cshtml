@@ -1,0 +1,16 @@
+﻿@using Webshop.Models;
+@model  Product
+
+@{
+    ViewBag.Title = "Index";
+}
+
+<h2>@Model.Name</h2>
+
+
+<p>@Model.Price SEK</p>
+
+Energiklas: @Model.Energyclass
+<p>Tillverkare: @Model.Manufactor</p>
+<p>@Model.Description</p>
+<p>@Model.Units st i nätlagret</p>

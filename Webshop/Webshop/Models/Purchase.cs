@@ -9,11 +9,9 @@ namespace Webshop.Models
     {
         public int Id { get; set; } // Primary Key
         public int Customer { get; set; } // Foreign Key --> Customer(Id)
+        public Customer CustomerObj { get; set; }
+
         public int Product { get; set; } // Foreign Key --> Product(Id)
-
-        
-
-        
-
+        public Product ProductObj { get; set; } 
     }
 }

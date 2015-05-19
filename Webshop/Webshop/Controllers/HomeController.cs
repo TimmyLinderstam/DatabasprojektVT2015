@@ -15,8 +15,6 @@ namespace Webshop.Controllers
     {
         public ActionResult Index()
         {
-            DBController.Instance.ToString();
-            //WebSecurity.IsAuthenticated
             ViewBag.Message = "Välkommen!";
 
             return View();

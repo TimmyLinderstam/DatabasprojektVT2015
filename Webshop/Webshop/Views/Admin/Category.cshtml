@@ -1,0 +1,35 @@
+﻿@using Webshop.Models;
+@model  IEnumerable<Category>
+
+@{
+    ViewBag.Title = "Category";
+}
+
+
+
+<div>
+    @using (Html.BeginForm("SaveCategory", "Admin"))
+    {
+        <p>Namn:</p> <input name="CategoryName" type="text" />
+
+        <input type="submit" value="Lägg till" />
+    }
+</div>
+
+<br />
+
+<h2>Kategorier</h2>
+
+@foreach (var item in Model)
+{
+    <div class="product">
+        @using (Html.BeginForm("SaveCategory", "Admin"))
+        {
+        <input name="Id" type="hidden" value="@item.Id" />
+        <p>Namn:</p> <input name="CategoryName" type="text" value="@item.CategoryName" />
+
+        <input type="submit" value="Spara" />
+        }
+        @Html.ActionLink("Ta bort", "RemoveCategory", "Admin", new { id = item.Id }, null)
+    </div>
+}

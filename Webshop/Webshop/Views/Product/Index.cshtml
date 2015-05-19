@@ -1,14 +1,45 @@
-﻿@model  Webshop.Models.Product
+﻿@using Webshop.Models;
+@model  IEnumerable<Product>
 
 @{
-    ViewBag.Title = "Index";
+    ViewBag.Title = "Listar alla produkter";
 }
 
-<h2>Index</h2>
-
-Produkt
+<h2>Alla produkter</h2>
 
 
-<a>@Model.Price</a>
+@if (ViewBag.isAdmin)
+{
+    <br />
+    @Html.ActionLink("Lägg till produkt", "EditProduct", "Admin")
+}
 
-Energiklas: @Model.Energyclass
+
+<div>
+    @foreach (Product p in Model)
+    {
+
+        <div class="product">
+            <h3>@p.Name</h3>
+
+            <p>Tillverkare: @p.Manufactor</p>
+
+            <p>@p.Price SEK ink. Moms</p>
+
+            <a href="@Url.Action("Item", "Product", new { id = p.Id})">
+                Läs mer...
+            </a>
+
+            @if (ViewBag.isAdmin)
+            {
+                <br />
+                <br />
+                @Html.ActionLink("Ändra", "EditProduct", "Admin", new { id = p.Id }, null)
+                @Html.ActionLink("Ta bort", "RemoveProduct", "Admin", new { id = p.Id }, null)
+            }
+
+        </div>
+
+
+    }
+</div>

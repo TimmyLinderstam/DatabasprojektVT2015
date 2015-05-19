@@ -754,3 +754,12 @@ tr.pager td {
             margin: 0;
         }
 }
+
+
+/*Our css*/
+
+.product {
+    background-color: white;
+    padding: 1em 0 2em 2em;
+    margin: 2em 0 3em 0;
+}

@@ -20,18 +20,18 @@ namespace Webshop.Controllers
             return View();
         }
 
-        public ActionResult EditProduct()
+        public ActionResult EditProduct(int id = -1)
         {
-
-            return View();
+            ViewBag.categories = DBController.Instance.GetCategories();
+            return View(DBController.Instance.GetProduct(id));
         }
 
         [HttpPost]
         public ActionResult SaveProduct(Product p)
         {
-            DBController.Instance.AddProduct(p);
+            DBController.Instance.SaveProduct(p);
 
-            return RedirectToAction("Index");
+            return RedirectToAction("Index", "Product");
         }
 
         [HttpPost]
@@ -39,7 +39,28 @@ namespace Webshop.Controllers
         {
             DBController.Instance.RemoveProduct(id);
 
-            return RedirectToAction("Index");
+            return RedirectToAction("Index", "Product");
+        }
+
+        public ActionResult Category()
+        {
+            return View(DBController.Instance.GetCategories());
+        }
+
+        // Category
+        public ActionResult RemoveCategory(int id)
+        {
+            DBController.Instance.RemoveCategory(id);
+
+            return RedirectToAction("Category", "Admin");
+        }
+
+        [HttpPost]
+        public ActionResult SaveCategory(Category category)
+        {
+            DBController.Instance.SaveCategory(category);
+
+            return RedirectToAction("Category", "Admin");
         }
 
     }
