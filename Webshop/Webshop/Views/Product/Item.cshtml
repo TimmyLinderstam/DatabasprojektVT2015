@@ -2,18 +2,43 @@
 @model  Product
 
 @{
-    ViewBag.Title = "Index";
+    ViewBag.Title = Model.Name;
 }
 
-<h2>@Model.Name</h2>
+<h2>@Html.ValidationSummary()</h2>
+
+<div class="product">
+
+    <h2>@Model.Name</h2>
 
 
-<p>@Model.Price SEK</p>
+    <p>@Model.Price SEK</p>
 
-Energiklas: @Model.Energyclass
-<p>Tillverkare: @Model.Manufactor</p>
-<p>@Model.Description</p>
-<p>@Model.Units st i nätlagret</p>
+    Energiklas: @Model.Energyclass
+    <p>Tillverkare: @Model.Manufactor</p>
+    <p>@Model.Description</p>
+    <p>@Model.Units st i nätlagret</p>
+
+    <br />
+
+    @if (ViewBag.isAdmin)
+    {
+        <p>skriv admin info here</p>
+    }
+
+    @if (Session["Customer"] != null)
+    {
+        using (Html.BeginForm("AddToBasket", "Product"))
+        {
+
+            <input type="hidden" name="id" value="@Model.Id" />
+            <p>Antal:</p><input name="quantity" type="number" min="1" max="99" />
+
+            <br />
+    <input type="submit" value="lägg till i kundvagn" />
+        }
+    }
+</div>
 
 <div>
     <h3>Tillbehör:</h3>

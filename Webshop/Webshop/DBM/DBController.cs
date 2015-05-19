@@ -164,5 +164,136 @@ namespace Webshop.DBM
             cmd.CommandText = String.Format("DELETE from Serie WHERE Id={0}", id);
             cmd.ExecuteNonQuery();
         }
+
+        public List<Basket> GetBasketByPersonId(string personId)
+        {
+            var cmd = CreateCmd();
+            cmd.CommandText = String.Format("SELECT baskets.* FROM Customer inner join Basket as baskets on baskets.Customer=Customer.Id WHERE Customer.PersonId={0}", personId);
+            var baskets = ReadList<Basket>(cmd);
+
+            foreach (var item in baskets)
+            {
+                item.CustomerObj = Read<Customer>(String.Format("SELECT * FROM Customer WHERE Id={0}", item.Customer));
+                item.ProductObj = Read<Product>(String.Format("SELECT * FROM Product WHERE Id={0}", item.Product));
+            }
+
+            return baskets;
+        }
+
+        public void SaveCustomer(Customer customer)
+        {
+            var cmd = CreateCmd();
+
+            if (customer.Id == 0)
+            {
+                cmd.CommandText = "INSERT INTO Customer " +
+                    "VALUES(NULL, @PersonId, @EmailAdress, @HomeAdress, @TelephoneNumber)";
+
+            }
+            else
+            {
+                cmd.CommandText = String.Format("UPDATE Customer " +
+                   "SET PersonId=@PersonId, EmailAdress=@EmailAdress, HomeAdress=@HomeAdress, TelephoneNumber=@TelephoneNumber WHERE Id={0}", customer.Id);
+            }
+
+            cmd.Prepare();
+
+            // Add values
+            cmd.Parameters.AddWithValue("@PersonId", customer.PersonId);
+            cmd.Parameters.AddWithValue("@EmailAdress", customer.EmailAdress);
+            cmd.Parameters.AddWithValue("@HomeAdress", customer.HomeAdress);
+            cmd.Parameters.AddWithValue("@TelephoneNumber", customer.TelephoneNumber);
+
+            cmd.ExecuteNonQuery();
+        }
+        
+        public Customer GetCustomer(string id)
+        {
+            var sql = String.Format("SELECT * FROM Customer WHERE Id={0}", id);
+
+            var customer = Read<Customer>(sql);
+
+            return customer;
+        }
+
+        public Customer GetCustomerByPersonId(string id)
+        {
+            var sql = String.Format("SELECT * FROM Customer WHERE PersonId={0}", id);
+
+            var customer = Read<Customer>(sql);
+
+            return customer;
+        }
+
+        public void Buy(Customer c)
+        {
+            // TODO BEGIN TRANSACTION
+            var baskets = GetBasketByPersonId(c.PersonId);
+            foreach (var basket in baskets)
+            {
+                var cmd = CreateCmd();
+
+                // lower units count
+                cmd.CommandText = String.Format("UPDATE Product SET Units=Units-{0} WHERE Id={1}", basket.Quantity, basket.Product);
+                cmd.ExecuteNonQuery();
+
+                // add to purchase
+                cmd = CreateCmd();
+                cmd.CommandText = "INSERT INTO Purchase " +
+                    "VALUES(NULL, @Customer, @Product, @Quantity)";
+
+                cmd.Prepare();
+
+                // Add values
+                cmd.Parameters.AddWithValue("@Customer", basket.Customer);
+                cmd.Parameters.AddWithValue("@Product", basket.Product);
+                cmd.Parameters.AddWithValue("@Quantity", basket.Quantity);
+
+                cmd.ExecuteNonQuery();
+
+
+                // Remove from basket
+                cmd = CreateCmd();
+                cmd.CommandText = String.Format("DELETE FROM Basket WHERE Id={0}", basket.Id);
+                cmd.ExecuteNonQuery();
+            }
+        }
+
+        public List<Purchase> GetPurchases()
+        {
+            var cmd = CreateCmd();
+            cmd.CommandText = "SELECT * FROM Purchase";
+
+            var list = ReadList<Purchase>(cmd);
+            foreach (var item in list)
+            {
+                item.CustomerObj = Read<Customer>(String.Format("SELECT * FROM Customer WHERE Id={0}", item.Customer));
+                item.ProductObj = Read<Product>(String.Format("SELECT * FROM Product WHERE Id={0}", item.Product));
+            }
+
+            return list;
+        }
+
+        public bool AddToBasket(int id, int customer, int quantity)
+        {
+            if (GetProduct(id).Units - quantity < 0)
+                return false;
+
+            var cmd = CreateCmd();
+
+            cmd.CommandText = "INSERT INTO Basket " +
+                    "VALUES(NULL, @Customer, @Product, @Quantity)";
+
+            cmd.Prepare();
+
+            // Add values
+            cmd.Parameters.AddWithValue("@Customer", customer);
+            cmd.Parameters.AddWithValue("@Product", id);
+            cmd.Parameters.AddWithValue("@Quantity", quantity);
+
+            cmd.ExecuteNonQuery();
+
+            return true;
+        }
     }
 }

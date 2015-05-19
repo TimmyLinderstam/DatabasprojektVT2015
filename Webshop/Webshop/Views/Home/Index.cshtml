@@ -8,15 +8,39 @@
                 <h1>@ViewBag.Title.</h1>
                 <h2>@ViewBag.Message</h2>
             </hgroup>
-           
+
         </div>
     </section>
 }
 <h3>Vad vill du göra?</h3>
 <ul>
-    <li>@Html.ActionLink("Se produkter", "Index","Product")</li>
+
+    @if (Session["Customer"] == null)
+    {
+        <br />
+        using (Html.BeginForm("Login", "Checkout"))
+        {
+            <p>Personnr:</p>
+            <input name="id" type="number" />
+            <input type="submit" value="Logga in" />
+        }
+        <br />
+    }
+    else
+    {
+        <h4>Du är inloggad!</h4>
+    <br />
+    }
+
+    <li>@Html.ActionLink("Se produkter", "Index", "Product")</li>
+
+    <br />
+    <li>@Html.ActionLink("Se kundvagn", "Index", "Checkout")</li>
+
+    <br />
+    <li>@Html.ActionLink("Registrera sig som Kund", "CreateCustomer", "Checkout")</li>
 
     <br />
     <li>@Html.ActionLink("Gå till admin", "Index", "Admin")</li>
-    
+
 </ul>

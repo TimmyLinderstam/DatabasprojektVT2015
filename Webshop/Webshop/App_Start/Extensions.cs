@@ -22,9 +22,9 @@ namespace Webshop.App_Start
                 }
                 return (T)obj;
             }
-            catch
+            catch(Exception e)
             {
-                throw new Exception("Table variables and class variables does not match");
+                throw e;//new Exception("Table variables and class variables does not match");
             }
            // return default(T);
         }

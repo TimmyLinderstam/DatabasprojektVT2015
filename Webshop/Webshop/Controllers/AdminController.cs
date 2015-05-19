@@ -114,5 +114,12 @@ namespace Webshop.Controllers
             return RedirectToAction("Serie", "Admin");
         }
 
+        // purchases
+        public ActionResult Purchase()
+        {
+            return View(DBController.Instance.GetPurchases());
+        }
+
+
     }
 }

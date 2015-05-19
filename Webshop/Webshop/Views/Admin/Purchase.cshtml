@@ -1,0 +1,26 @@
+﻿@using Webshop.Models;
+@model  IEnumerable<Purchase>
+
+@{
+    ViewBag.Title = "Purchase";
+}
+
+<h2>Köp historik</h2>
+
+<h3>Vinst: @Model.Sum(x => x.Quantity * (x.ProductObj.Price - x.ProductObj.AcquisitionPrice)) SEK innan skatt</h3>
+
+@foreach (var item in Model)
+{
+    <div class="product">
+        Namn: @item.ProductObj.Name
+        <br />
+        Pris: @item.ProductObj.Price SEK
+        <br />
+        Antal: @item.Quantity
+        <br /><br />
+        
+        Email: @item.CustomerObj.EmailAdress
+        <br />
+        Telenr: @item.CustomerObj.TelephoneNumber
+    </div>
+}

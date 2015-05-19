@@ -5,7 +5,7 @@ using System.Web;
 
 namespace Webshop.Models
 {
-    public class Purchase
+    public class Basket
     {
         public int Id { get; set; } // Primary Key
 

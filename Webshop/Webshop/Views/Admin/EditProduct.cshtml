@@ -44,25 +44,7 @@
 
     <p>Serie:</p>
   @Html.DropDownListFor(x => x.Series, (IEnumerable<SelectListItem>)ViewBag.series)
-    //((List<Serie>)ViewBag.series).Add(new Serie() { Id =0, SerieName = "()"});
   
-    @*Html.DropDownListFor(
-    x => x.Series,
-    new SelectList(
-            ((List<Serie>)ViewBag.series).OrderBy(s => s.SerieName),
-        "Id",
-            "SerieName",
-        Model.Series))//, "-- Select State --")
-    *@
-    @*Html.DropDownListFor(x=>x.Series
-        ,
-    new SelectList(
-                ((List<Serie>)ViewBag.series).Select(x => new { Value = x.Id, Text = x.SerieName }),
-        "Value",
-            "Text", Model == null ? 0 : Model.Series
-        )
-    )
-    *@
 
     <br />    <br />
     <input type="submit" value="Spara" />

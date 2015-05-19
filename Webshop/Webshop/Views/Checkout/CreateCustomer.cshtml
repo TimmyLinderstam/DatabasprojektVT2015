@@ -1,0 +1,23 @@
+﻿@using Webshop.Models;
+@model Customer
+
+@{
+    ViewBag.Title = "CreateCustomer";
+}
+
+<h2>Skapa kund</h2>
+
+<h2>@Html.ValidationSummary()</h2>
+
+@using (Html.BeginForm("SaveCustomer", "Checkout"))
+{
+    @Html.HiddenFor(x => x.Id)
+
+    <p>Personnr:</p> @Html.EditorFor(x => x.PersonId)
+    <p>TelephoneNumber:</p> @Html.EditorFor(x => x.TelephoneNumber)
+    <p>HomeAdress:</p> @Html.EditorFor(x => x.HomeAdress)
+    <p>EmailAdress:</p> @Html.EditorFor(x => x.EmailAdress)
+
+    <br />
+    <input type="submit" value="Spara" />
+}
