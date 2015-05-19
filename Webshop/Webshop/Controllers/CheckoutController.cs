@@ -19,11 +19,11 @@ namespace Webshop.Controllers
 
             if (c == null)
             {
-                return View();
+                return View("Index");
             }
             else
             {
-                return View(DBController.Instance.GetBasketByPersonId(c.PersonId));
+                return View("Index", DBController.Instance.GetBasketByPersonId(c.PersonId));
             }
         }
 
@@ -62,8 +62,15 @@ namespace Webshop.Controllers
 
             if (c != null)
             {
-                DBController.Instance.Buy(c);
-                return RedirectToAction("Index", "Home");
+                if (DBController.Instance.Buy(c))
+                {
+                    return RedirectToAction("Index", "Home");
+                }
+                else
+                {
+                    ModelState.AddModelError("error", "lagret har inte så många!");
+                    return Index();
+                }
             }
             else
             {

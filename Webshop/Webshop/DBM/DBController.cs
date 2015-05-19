@@ -1,4 +1,5 @@
-﻿using System;
+﻿using MySql.Data.MySqlClient;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -49,25 +50,33 @@ namespace Webshop.DBM
                 cmd.Parameters.AddWithValue("@Series", p.Series);
 
             cmd.ExecuteNonQuery();
+
+            SafeClose();
         }
 
         public void RemoveProduct(int id)
         {
             var cmd = CreateCmd();
             cmd.CommandText = String.Format("DELETE from Product WHERE Id={0}", id);
-            cmd.ExecuteNonQuery();
+            ExecuteQueryAndClose(cmd);
         }
 
         public Product GetProduct(int id)
         {
-            var sql = String.Format("SELECT * FROM Product WHERE Id={0}", id);
+            var cmd = CreateCmd();
+            cmd.CommandText = String.Format("SELECT * FROM Product WHERE Id={0}", id);
 
-            var product = Read<Product>(sql);
+            var product = Read<Product>(cmd);
             if (product != null)
             {
-                product.CategoryObj = Read<Category>(String.Format("SELECT * FROM Category WHERE Id={0}", product.Category));
-                product.SeriesObj = Read<Serie>(String.Format("SELECT * FROM Serie WHERE Id={0}", product.Series));
+                cmd.CommandText = String.Format("SELECT * FROM Category WHERE Id={0}", product.Category);
+                product.CategoryObj = Read<Category>(cmd);
+
+                cmd.CommandText = String.Format("SELECT * FROM Serie WHERE Id={0}", product.Series);
+                product.SeriesObj = Read<Serie>(cmd);
             }
+
+            SafeClose();
             return product;
         }
 
@@ -75,14 +84,18 @@ namespace Webshop.DBM
         {
             var cmd = CreateCmd();
             cmd.CommandText = "SELECT * FROM Product";
-            return ReadList<Product>(cmd);
+            var list = ReadList<Product>(cmd);
+            SafeClose();
+            return list ;
         }
 
         public List<Product> GetProductSuggestions(Product product)
         {
             var cmd = CreateCmd();
             cmd.CommandText = String.Format("SELECT products.* FROM Product as products inner join Serie on Serie.Id=products.Series WHERE Serie.Id={0} AND products.Id !={1} LIMIT 5", product.Series, product.Id);
-            return ReadList<Product>(cmd);
+            var list = ReadList<Product>(cmd);
+            SafeClose();
+            return list;
         }
 
         // CAT
@@ -91,7 +104,10 @@ namespace Webshop.DBM
         {
             var cmd = CreateCmd();
             cmd.CommandText = "SELECT * FROM Category";
-            return ReadList<Category>(cmd);
+
+            var list = ReadList<Category>(cmd);
+            SafeClose();
+            return list;
         }
 
         public void SaveCategory(Category category)
@@ -115,14 +131,14 @@ namespace Webshop.DBM
             // Add values
             cmd.Parameters.AddWithValue("@CategoryName", category.CategoryName);
 
-            cmd.ExecuteNonQuery();
+            ExecuteQueryAndClose(cmd);
         }
 
         public void RemoveCategory(int id)
         {
             var cmd = CreateCmd();
             cmd.CommandText = String.Format("DELETE from Category WHERE Id={0}", id);
-            cmd.ExecuteNonQuery();
+            ExecuteQueryAndClose(cmd);
         }
 
         // SERIE
@@ -131,7 +147,9 @@ namespace Webshop.DBM
         {
             var cmd = CreateCmd();
             cmd.CommandText = "SELECT * FROM Serie";
-            return ReadList<Serie>(cmd);
+            var list = ReadList<Serie>(cmd);
+            SafeClose();
+            return list;
         }
 
         public void SaveSerie(Serie serie)
@@ -155,14 +173,14 @@ namespace Webshop.DBM
             // Add values
             cmd.Parameters.AddWithValue("@SerieName", serie.SerieName);
 
-            cmd.ExecuteNonQuery();
+            ExecuteQueryAndClose(cmd);
         }
 
         public void RemoveSerie(int id)
         {
             var cmd = CreateCmd();
             cmd.CommandText = String.Format("DELETE from Serie WHERE Id={0}", id);
-            cmd.ExecuteNonQuery();
+            ExecuteQueryAndClose(cmd);
         }
 
         public List<Basket> GetBasketByPersonId(string personId)
@@ -173,10 +191,14 @@ namespace Webshop.DBM
 
             foreach (var item in baskets)
             {
-                item.CustomerObj = Read<Customer>(String.Format("SELECT * FROM Customer WHERE Id={0}", item.Customer));
-                item.ProductObj = Read<Product>(String.Format("SELECT * FROM Product WHERE Id={0}", item.Product));
+                cmd.CommandText = String.Format("SELECT * FROM Customer WHERE Id={0}", item.Customer);
+                item.CustomerObj = Read<Customer>(cmd);
+
+                cmd.CommandText = String.Format("SELECT * FROM Product WHERE Id={0}", item.Product);
+                item.ProductObj = Read<Product>(cmd);
             }
 
+            SafeClose();
             return baskets;
         }
 
@@ -204,59 +226,82 @@ namespace Webshop.DBM
             cmd.Parameters.AddWithValue("@HomeAdress", customer.HomeAdress);
             cmd.Parameters.AddWithValue("@TelephoneNumber", customer.TelephoneNumber);
 
-            cmd.ExecuteNonQuery();
+            ExecuteQueryAndClose(cmd);
         }
         
         public Customer GetCustomer(string id)
         {
-            var sql = String.Format("SELECT * FROM Customer WHERE Id={0}", id);
+            var cmd = CreateCmd();
+            cmd.CommandText = String.Format("SELECT * FROM Customer WHERE Id={0}", id);
 
-            var customer = Read<Customer>(sql);
-
+            var customer = Read<Customer>(cmd);
+            SafeClose();
             return customer;
         }
 
         public Customer GetCustomerByPersonId(string id)
         {
-            var sql = String.Format("SELECT * FROM Customer WHERE PersonId={0}", id);
+            var cmd = CreateCmd();
+            cmd.CommandText = String.Format("SELECT * FROM Customer WHERE PersonId={0}", id);
 
-            var customer = Read<Customer>(sql);
-
+            var customer = Read<Customer>(cmd);
+            SafeClose();
             return customer;
         }
 
-        public void Buy(Customer c)
+        public bool Buy(Customer c)
         {
-            // TODO BEGIN TRANSACTION
             var baskets = GetBasketByPersonId(c.PersonId);
-            foreach (var basket in baskets)
+
+            var cmd = CreateCmdTransaction();
+            try
             {
-                var cmd = CreateCmd();
+                foreach (var basket in baskets)
+                {
+                    if (basket.ProductObj.Units - basket.Quantity < 0)
+                        throw new Exception("To many!");
 
-                // lower units count
-                cmd.CommandText = String.Format("UPDATE Product SET Units=Units-{0} WHERE Id={1}", basket.Quantity, basket.Product);
-                cmd.ExecuteNonQuery();
+                    // lower units count
+                    cmd.CommandText = String.Format("UPDATE Product SET Units=Units-{0} WHERE Id={1}", basket.Quantity, basket.Product);
+                    cmd.ExecuteNonQuery();
 
-                // add to purchase
-                cmd = CreateCmd();
-                cmd.CommandText = "INSERT INTO Purchase " +
-                    "VALUES(NULL, @Customer, @Product, @Quantity)";
+                    // add to purchase
+                    cmd.CommandText = "INSERT INTO Purchase " +
+                        "VALUES(NULL, @Customer, @Product, @Quantity)";
 
-                cmd.Prepare();
+                    cmd.Prepare();
 
-                // Add values
-                cmd.Parameters.AddWithValue("@Customer", basket.Customer);
-                cmd.Parameters.AddWithValue("@Product", basket.Product);
-                cmd.Parameters.AddWithValue("@Quantity", basket.Quantity);
+                    // Add values
+                    cmd.Parameters.AddWithValue("@Customer", basket.Customer);
+                    cmd.Parameters.AddWithValue("@Product", basket.Product);
+                    cmd.Parameters.AddWithValue("@Quantity", basket.Quantity);
 
-                cmd.ExecuteNonQuery();
+                    cmd.ExecuteNonQuery();
 
 
-                // Remove from basket
-                cmd = CreateCmd();
-                cmd.CommandText = String.Format("DELETE FROM Basket WHERE Id={0}", basket.Id);
-                cmd.ExecuteNonQuery();
+                    // Remove from basket
+                    cmd.CommandText = String.Format("DELETE FROM Basket WHERE Id={0}", basket.Id);
+                    cmd.ExecuteNonQuery();
+                }
+
+                cmd.Transaction.Commit();
+                return true;
             }
+            catch (Exception ex)
+            {
+                try
+                {
+                    cmd.Transaction.Rollback();
+                }
+                catch (MySqlException mse)
+                {
+                }
+            }
+            finally
+            {
+                SafeClose();
+            }
+            return false;
         }
 
         public List<Purchase> GetPurchases()
@@ -267,9 +312,14 @@ namespace Webshop.DBM
             var list = ReadList<Purchase>(cmd);
             foreach (var item in list)
             {
-                item.CustomerObj = Read<Customer>(String.Format("SELECT * FROM Customer WHERE Id={0}", item.Customer));
-                item.ProductObj = Read<Product>(String.Format("SELECT * FROM Product WHERE Id={0}", item.Product));
+                cmd.CommandText = String.Format("SELECT * FROM Customer WHERE Id={0}", item.Customer);
+                item.CustomerObj = Read<Customer>(cmd);
+
+                cmd.CommandText = String.Format("SELECT * FROM Product WHERE Id={0}", item.Product);
+                item.ProductObj = Read<Product>(cmd);
             }
+
+            SafeClose();
 
             return list;
         }
@@ -291,8 +341,7 @@ namespace Webshop.DBM
             cmd.Parameters.AddWithValue("@Product", id);
             cmd.Parameters.AddWithValue("@Quantity", quantity);
 
-            cmd.ExecuteNonQuery();
-
+            ExecuteQueryAndClose(cmd);
             return true;
         }
     }

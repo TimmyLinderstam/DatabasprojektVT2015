@@ -24,7 +24,7 @@ namespace Webshop.DBM
 
         public DBManager()
         {
-            GetConnection();
+            //GetConnection();
             CreateTablesIfNotExists();
         }
 
@@ -36,11 +36,11 @@ namespace Webshop.DBM
                 var cmd = CreateCmd();
                 String tables = File.ReadAllText(HostingEnvironment.MapPath(@"~/Content/tables.sql"));
                 cmd.CommandText = tables;
-                cmd.ExecuteNonQuery();
+                ExecuteQueryAndClose(cmd);
             }
         }
 
-        public void ExecuteQuery(MySqlCommand cmd)
+        public void ExecuteQueryAndClose(MySqlCommand cmd)
         {
             try
             {
@@ -50,15 +50,15 @@ namespace Webshop.DBM
             {
                 string MessageString = "The following error occurred loading the Column details: "
                     + e.ErrorCode + " - " + e.Message;
-
+            }
+            finally
+            {
+                SafeClose();
             }
         }
 
-        public T Read<T>(string sql)
+        public T Read<T>(MySqlCommand cmd)
         {
-            var cmd = CreateCmd();
-            cmd.CommandText = sql;
-
             MySqlDataReader reader = cmd.ExecuteReader();
 
             var list = new List<Dictionary<string, object>>();
@@ -109,8 +109,6 @@ namespace Webshop.DBM
                     list.Add(row);
                 }
 
-
-
                 List<T> results = new List<T>();
                 foreach (var item in list)
                 {
@@ -129,13 +127,38 @@ namespace Webshop.DBM
 
         protected MySqlCommand CreateCmd()
         {
-            MySqlCommand cmd = new MySqlCommand();
-            cmd.Connection = Connection;
+            // TODO ERROR
+            return GetConnection().CreateCommand();
+        }
+
+        protected MySqlCommand CreateCmdTransaction()
+        {
+            MySqlCommand cmd = CreateCmd();
+            cmd.Transaction = Connection.BeginTransaction();
             return cmd;
         }
 
-        private void GetConnection()
+        protected void SafeClose()
         {
+            try
+            {
+                Connection.Close();
+                ConnectionOpen = false;
+                Console.WriteLine("closed connection");
+            }
+            catch (Exception e)
+            {
+            }
+        }
+
+        private MySqlConnection GetConnection()
+        {
+            if (ConnectionOpen)
+            {
+                Console.WriteLine("BEWARE: connection was requsted and already opened");
+                return Connection;
+            }
+
             ConnectionOpen = false;
 
             Connection = new MySqlConnection();
@@ -144,12 +167,14 @@ namespace Webshop.DBM
             if (OpenLocalConnection())
             {
                 ConnectionOpen = true;
+                Console.WriteLine("opened connection");
+                return Connection;
             }
             else
             {
+                return null;
                 throw new Exception("Please Open a connection first");
             }
-
         }
 
         private bool OpenLocalConnection()
@@ -167,11 +192,11 @@ namespace Webshop.DBM
 
 
 
-        ~DBManager()
+       /* ~DBManager()
         {
             Console.WriteLine("Closed SQL Connection");
             Connection.Close();
-        }
+        }*/
 
     }
 }

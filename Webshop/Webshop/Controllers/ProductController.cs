@@ -26,7 +26,7 @@ namespace Webshop.Controllers
 
             var product = DBController.Instance.GetProduct(id);
             ViewBag.related = DBController.Instance.GetProductSuggestions(product);
-            return View(product);
+            return View("Item", product);
         }
 
         [HttpPost]
@@ -38,21 +38,18 @@ namespace Webshop.Controllers
             {
                 if (DBController.Instance.AddToBasket(id, c.Id, quantity))
                 {
-                    return RedirectToAction("Item", "Product", new { Id = id });
+                    ModelState.AddModelError("error", (quantity + " st laddes till i din kundvagn!"));
+                    return Item(id);
                 }
                 else
                 {
                     ModelState.AddModelError("error", "There isnt enough units!");
-
-                    var product = DBController.Instance.GetProduct(id);
-                    ViewBag.related = DBController.Instance.GetProductSuggestions(product);
-                    return View("Item", product);
+                    return Item(id);
                 }
             }
             else
             {
-                ModelState.AddModelError("error", "Du har inte loggat in!");
-                return RedirectToAction("Index", "Checkout");
+                return RedirectToAction("Index", "Home");
             }
         }
 

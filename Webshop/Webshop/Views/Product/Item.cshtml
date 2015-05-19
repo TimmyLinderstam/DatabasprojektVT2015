@@ -35,23 +35,26 @@
             <p>Antal:</p><input name="quantity" type="number" min="1" max="99" />
 
             <br />
-    <input type="submit" value="lägg till i kundvagn" />
+            <input type="submit" value="lägg till i kundvagn" />
         }
     }
 </div>
 
-<div>
-    <h3>Tillbehör:</h3>
-    @foreach (Product p in ViewBag.related)
-    {
-        <div class="product">
-            <h4>@p.Name</h4>
+@if (((List<Product>)ViewBag.related).Count() >= 1)
+{
+    <div>
+        <h3>Tillbehör:</h3>
+        @foreach (Product p in ViewBag.related)
+        {
+            <div class="product">
+                <h4>@p.Name</h4>
 
-            <p>@p.Price SEK ink. Moms</p>
+                <p>@p.Price SEK ink. Moms</p>
 
-            <a href="@Url.Action("Item", "Product", new { id = p.Id})">
-                Läs mer...
-            </a>
-        </div>
-    }
-</div>
+                <a href="@Url.Action("Item", "Product", new { id = p.Id})">
+                    Läs mer...
+                </a>
+            </div>
+        }
+    </div>
+}
