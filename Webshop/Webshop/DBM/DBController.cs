@@ -110,6 +110,8 @@ namespace Webshop.DBM
             return list;
         }
 
+      
+
         public void SaveCategory(Category category)
         {
             var cmd = CreateCmd();

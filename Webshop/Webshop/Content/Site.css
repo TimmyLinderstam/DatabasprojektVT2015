@@ -58,6 +58,47 @@ mark {
     visibility: hidden;
 }
 
+#productname {
+    text-align: center;
+
+}
+#bild {
+    text-align: center;
+    margin-top: 100px;
+    margin-bottom: 100px;
+
+}
+#fakta{
+    text-align:center;
+    font-size:20px;
+    font-weight: bold;
+    
+}
+#fakta p{
+    margin:-5px !important;
+}
+#spec{
+    font-size: 13px;
+    font-style: italic;
+}
+#spec p{
+    margin:0px !important;
+
+}
+#översikt{
+    font-weight: bold;
+    font-size: 11px;
+    margin-bottom: -10px;
+}
+#besk{
+    font-size: 13px;
+    margin-bottom: 40px;
+    margin-right: 10px;
+
+}
+#mindrenamn{
+    font-weight:bold;
+}
 h1, h2, h3,
 h4, h5, h6 {
     color: #000;
@@ -89,6 +130,8 @@ h5, h6 {
         padding: 0;
         text-decoration: none;
     }
+
+
 
 
 /* main layout

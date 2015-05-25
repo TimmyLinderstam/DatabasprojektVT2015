@@ -13,7 +13,6 @@ namespace Webshop.App_Start
         {
             try
             {
-                //lelele
                 Type type = typeof(T);
                 var obj = Activator.CreateInstance(type);
 

@@ -7,17 +7,53 @@
 
 <h2>@Html.ValidationSummary()</h2>
 
+
+@*public int Id { get; set; } // Primary Key
+        public string Name { get; set; }
+        public int Units { get; set; }
+        public string Energyclass { get; set; }
+        public string Model { get; set; }
+        public int AcquisitionPrice { get; set; }
+        public string Description { get; set; }
+        public int Price { get; set; }
+        public string Manufactor { get; set; }
+
+        public int Series { get; set; } // Foreign Key --> Serie(Id)
+        public Serie SeriesObj { get; set; }
+
+        public int Category { get; set; } // Foreign Key --> Category(Id)
+        public Category CategoryObj { get; set; }*@
+
+
 <div class="product">
 
-    <h2>@Model.Name</h2>
+    <h2 id="productname">@Model.Name</h2>
 
+    <div id="bild">
+        <p>BILD TILL SENARE RELEASE</p>
+    </div>
+   
+    <div id="fakta">
+        <p>@Model.Price kr</p>
+        <p>@Model.Units st i nätlagret</p>
+        <p>Lägg till i varukorgen</p>
+    </div>
 
-    <p>@Model.Price SEK</p>
-
-    Energiklas: @Model.Energyclass
-    <p>Tillverkare: @Model.Manufactor</p>
-    <p>@Model.Description</p>
-    <p>@Model.Units st i nätlagret</p>
+    <div id="översikt">
+        <p>ÖVERBLICK</p>
+    </div>
+    <div id="besk">
+        <p id="mindrenamn">@Model.Name</p>
+        <p>@Model.Description</p>
+    </div>
+        <div id="spec">
+            <p>PRODUKTSPECIFIKATION</p>
+            <p>Energiklas: @Model.Energyclass</p>
+            <p>Tillverkare: @Model.Manufactor</p>
+            <p>Vårt Artikelnr: @Model.Id</p>
+        </div>
+    
+    <p>@Model.</p>
 
     <br />
 
