@@ -62,7 +62,6 @@ namespace Webshop.Controllers
             return RedirectToAction("Index", "Product");
         }
 
-        [HttpPost]
         public ActionResult RemoveProduct(int id)
         {
             DBController.Instance.RemoveProduct(id);
