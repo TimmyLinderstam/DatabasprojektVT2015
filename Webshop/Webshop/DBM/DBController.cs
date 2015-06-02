@@ -408,15 +408,15 @@ namespace Webshop.DBM
             else
             {
                 cmd.CommandText = String.Format("UPDATE Promotion " +
-                   "SET Description=@Description Value=@Value, Category=@Category WHERE Id={0}", prom.Id);
+                   "SET Description=@Description, Value=@Value, Category=@Category WHERE Id={0}", prom.Id);
             }
 
             cmd.Prepare();
 
             // Add values
+            cmd.Parameters.AddWithValue("@Description", prom.Description);
             cmd.Parameters.AddWithValue("@Value", prom.Value);
             cmd.Parameters.AddWithValue("@Category", prom.Category);
-            cmd.Parameters.AddWithValue("@Description", prom.Description);
 
             ExecuteQueryAndClose(cmd);
         }
