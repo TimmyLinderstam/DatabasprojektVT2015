@@ -44,7 +44,7 @@ namespace Webshop.DBM
             // Foreign keys
             cmd.Parameters.AddWithValue("@Category", p.Category);
 
-            if (p.Series == 0)
+            if (p.Series <= 0)
                 cmd.Parameters.AddWithValue("@Series", null);
             else
                 cmd.Parameters.AddWithValue("@Series", p.Series);
@@ -331,20 +331,44 @@ namespace Webshop.DBM
             if (GetProduct(id).Units - quantity < 0)
                 return false;
 
+
             var cmd = CreateCmd();
 
-            cmd.CommandText = "INSERT INTO Basket " +
-                    "VALUES(NULL, @Customer, @Product, @Quantity)";
 
-            cmd.Prepare();
+            cmd.CommandText = String.Format("SELECT baskets.* FROM Customer inner join Basket as baskets on baskets.Customer=Customer.Id WHERE Customer.Id={0}", customer);
+            var baskets = ReadList<Basket>(cmd);
+            
+            // add to basket
+            if (baskets.AsQueryable().Any(x => x.Product == id))
+            {
+                cmd.CommandText = "UPDATE Basket " +
+                       "SET Quantity=Quantity + 1 WHERE Basket.Customer=@Customer";
 
-            // Add values
-            cmd.Parameters.AddWithValue("@Customer", customer);
-            cmd.Parameters.AddWithValue("@Product", id);
-            cmd.Parameters.AddWithValue("@Quantity", quantity);
+                cmd.Prepare();
 
-            ExecuteQueryAndClose(cmd);
-            return true;
+                // Add values
+                cmd.Parameters.AddWithValue("@Customer", customer);
+
+                ExecuteQueryAndClose(cmd);
+
+                return true;
+            }
+            else
+            {
+                // new basket
+                cmd.CommandText = "INSERT INTO Basket " +
+                        "VALUES(NULL, @Customer, @Product, @Quantity)";
+
+                cmd.Prepare();
+
+                // Add values
+                cmd.Parameters.AddWithValue("@Customer", customer);
+                cmd.Parameters.AddWithValue("@Product", id);
+                cmd.Parameters.AddWithValue("@Quantity", quantity);
+
+                ExecuteQueryAndClose(cmd);
+                return true;
+            }
         }
     }
 }
