@@ -59,9 +59,8 @@
 
     @if (ViewBag.isAdmin)
     {
-        <p>skriv admin info here, woop woopwowoowowowpppp
-    
-    WOOOOW</p>
+        <h3>Admin Info:</h3>
+        <p>Inköps Pris: @Model.AcquisitionPrice</p>
     }
 
     @if (Session["Customer"] != null)
