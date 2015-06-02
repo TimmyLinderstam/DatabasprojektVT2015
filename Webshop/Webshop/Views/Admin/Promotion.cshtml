@@ -1,0 +1,61 @@
+﻿@using Webshop.Models;
+@model  IEnumerable<Promotion>
+
+@{
+    ViewBag.Title = "Kampanjer";
+}
+
+
+<h2>Kampanjer</h2>
+
+<div class="product">
+    NY:
+    @using (Html.BeginForm("SavePromotion", "Admin"))
+    {
+
+        <input name="Id" type="hidden" />
+
+        <p>Beskrivning:</p><input name="Description" type="text" /> <p> Kampanj Värde: </p> <input name="Value" type="text" /> <p>%</p>
+
+        <p>Kategori:</p>
+        @Html.DropDownList(
+    "Category",
+    new SelectList(
+        ((List<Category>)ViewBag.categories).Select(x => new { Value = x.Id, Text = x.CategoryName }),
+        "Value",
+         "Text", 0
+        )
+    )
+
+        <input type="submit" value="Lägg till" />
+    }
+</div>
+
+<div class="product">
+    @foreach (var item in Model)
+    {
+        using (Html.BeginForm("SavePromotion", "Admin"))
+        {
+
+            <input name="Id" type="hidden" value="@item.Id" />
+
+            <p>Beskrivning:</p><input name="Description" type="text" value="@item.Description" />
+
+            <p>% Kampanj:</p>    <input name="Value" type="text" value="@item.Value" />
+
+            <p>Kategori:</p>
+            @Html.DropDownList(
+    "Category",
+    new SelectList(
+        ((List<Category>)ViewBag.categories).Select(x => new { Value = x.Id, Text = x.CategoryName }),
+        "Value",
+         "Text", item.Category
+        )
+    )
+
+            <input type="submit" value="Updatera" />
+        }
+    }
+</div>
+
+<br />

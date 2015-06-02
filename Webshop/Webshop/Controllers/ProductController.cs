@@ -25,6 +25,7 @@ namespace Webshop.Controllers
             ViewBag.isAdmin = WebSecurity.IsAuthenticated;
 
             var product = DBController.Instance.GetProduct(id);
+            ViewBag.promotion = DBController.Instance.GetPromotionByCategory(product.Category);
             ViewBag.related = DBController.Instance.GetProductSuggestions(product);
             return View("Item", product);
         }

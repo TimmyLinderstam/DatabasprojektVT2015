@@ -9,32 +9,44 @@
 
 
 @*public int Id { get; set; } // Primary Key
-        public string Name { get; set; }
-        public int Units { get; set; }
-        public string Energyclass { get; set; }
-        public string Model { get; set; }
-        public int AcquisitionPrice { get; set; }
-        public string Description { get; set; }
-        public int Price { get; set; }
-        public string Manufactor { get; set; }
+    public string Name { get; set; }
+    public int Units { get; set; }
+    public string Energyclass { get; set; }
+    public string Model { get; set; }
+    public int AcquisitionPrice { get; set; }
+    public string Description { get; set; }
+    public int Price { get; set; }
+    public string Manufactor { get; set; }
 
-        public int Series { get; set; } // Foreign Key --> Serie(Id)
-        public Serie SeriesObj { get; set; }
+    public int Series { get; set; } // Foreign Key --> Serie(Id)
+    public Serie SeriesObj { get; set; }
 
-        public int Category { get; set; } // Foreign Key --> Category(Id)
-        public Category CategoryObj { get; set; }*@
+    public int Category { get; set; } // Foreign Key --> Category(Id)
+    public Category CategoryObj { get; set; }*@
 
 
 <div class="product">
+    @if (ViewBag.promotion != null)
+    {
+        <h2><font color="red">KAMPANJPRIS! @ViewBag.promotion.Value %</font></h2>
+    }
 
     <h2 id="productname">@Model.Name</h2>
 
     <div id="bild">
         <p>BILD TILL SENARE RELEASE</p>
     </div>
-   
+
     <div id="fakta">
-        <p>@Model.Price kr</p>
+        @if (ViewBag.promotion != null)
+        {
+            float newPrice = Model.Price* (ViewBag.promotion.Value/100f);
+            <p><font color="red">@newPrice SEK </font> (ORD. Pris @Model.Price SEK)</p>
+        }
+        else
+        {
+            <p>@Model.Price kr</p>
+        }
         <p>@Model.Units st i nätlagret</p>
         <p>Lägg till i varukorgen</p>
     </div>
@@ -46,14 +58,14 @@
         <p id="mindrenamn">@Model.Name</p>
         <p>@Model.Description</p>
     </div>
-        <div id="spec">
-            <p>PRODUKTSPECIFIKATION</p>
-            <p>Energiklas: @Model.Energyclass</p>
-            <p>Tillverkare: @Model.Manufactor</p>
-            <p>Vårt Artikelnr: @Model.Id</p>
-        </div>
-    
-   
+    <div id="spec">
+        <p>PRODUKTSPECIFIKATION</p>
+        <p>Energiklas: @Model.Energyclass</p>
+        <p>Tillverkare: @Model.Manufactor</p>
+        <p>Vårt Artikelnr: @Model.Id</p>
+    </div>
+
+
 
     <br />
 

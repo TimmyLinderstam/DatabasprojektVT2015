@@ -74,6 +74,20 @@ namespace Webshop.Controllers
             return View(DBController.Instance.GetCategories());
         }
 
+        public ActionResult Promotion()
+        {
+            ViewBag.categories = DBController.Instance.GetCategories();
+            return View(DBController.Instance.GetPromotions());
+        }
+
+        [HttpPost]
+        public ActionResult SavePromotion(Promotion prom)
+        {
+            DBController.Instance.SavePromotion(prom);
+
+            return RedirectToAction("Promotion", "Admin");
+        }
+
         // Category
         public ActionResult RemoveCategory(int id)
         {

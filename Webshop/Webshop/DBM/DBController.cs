@@ -370,5 +370,55 @@ namespace Webshop.DBM
                 return true;
             }
         }
+
+        public List<Promotion> GetPromotions()
+        {
+            var cmd = CreateCmd();
+            cmd.CommandText = "SELECT * FROM Promotion";
+
+            var list = ReadList<Promotion>(cmd);
+
+            SafeClose();
+
+            return list;
+        }
+
+        public Promotion GetPromotionByCategory(int catId)
+        {
+            var cmd = CreateCmd();
+            cmd.CommandText = String.Format("SELECT * FROM Promotion WHERE Category={0}", catId);
+
+            var item = Read<Promotion>(cmd);
+
+            SafeClose();
+
+            return item;
+        }
+
+        public void SavePromotion(Promotion prom)
+        {
+            var cmd = CreateCmd();
+
+            if (prom.Id == 0)
+            {
+                cmd.CommandText = "INSERT INTO Promotion " +
+                    "VALUES(NULL, @Description, @Value, @Category)";
+
+            }
+            else
+            {
+                cmd.CommandText = String.Format("UPDATE Promotion " +
+                   "SET Description=@Description Value=@Value, Category=@Category WHERE Id={0}", prom.Id);
+            }
+
+            cmd.Prepare();
+
+            // Add values
+            cmd.Parameters.AddWithValue("@Value", prom.Value);
+            cmd.Parameters.AddWithValue("@Category", prom.Category);
+            cmd.Parameters.AddWithValue("@Description", prom.Description);
+
+            ExecuteQueryAndClose(cmd);
+        }
     }
 }
